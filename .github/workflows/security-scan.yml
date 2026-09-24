@@ -1,0 +1,52 @@
+name: AlfaSec security scan
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install parser dependency
+        run: npm ci
+
+      - name: Run AlfaSec
+        id: alfasec
+        continue-on-error: true
+        run: |
+          python alfasec.py scan-project . --fail-on HIGH --format sarif --output alfasec.sarif
+
+      - name: Upload SARIF results
+        if: >-
+          always() &&
+          hashFiles('alfasec.sarif') != '' &&
+          (github.event_name != 'pull_request' ||
+           github.event.pull_request.head.repo.full_name == github.repository)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: alfasec.sarif
+
+      - name: Enforce AlfaSec policy
+        if: steps.alfasec.outcome == 'failure'
+        run: |
+          echo "AlfaSec reported a policy violation or scanner error."
+          exit 1

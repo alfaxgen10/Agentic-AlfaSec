@@ -1,0 +1,10 @@
+*.class
+node_modules/
+.alfasec/
+__pycache__/
+*.pyc
+benchmark-results.json
+alfasec.sarif
+alfasec.html
+.DS_Store
+Thumbs.db

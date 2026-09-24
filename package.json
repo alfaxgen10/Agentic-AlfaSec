@@ -1,0 +1,8 @@
+{
+  "name": "agentic-alfasec-analysis-engine",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@babel/parser": "^7.27.2"
+  }
+}

@@ -1,0 +1,51 @@
+name: AlfaSec CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run Python tests
+        run: python -m unittest discover -s tests -v
+
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Validate JavaScript
+        run: |
+          node --check ast_analyzer.mjs
+          node --check ast_project_analyzer.mjs
+          node --check web/app.js
+
+  java:
+    strategy:
+      matrix:
+        java-version: ["11", "17", "21"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java-version }}
+      - name: Compile local agent
+        run: javac -Xlint:all agent/AgenticAlfaSecAgent.java
