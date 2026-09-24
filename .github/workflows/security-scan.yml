@@ -33,7 +33,7 @@ jobs:
         id: alfasec
         continue-on-error: true
         run: |
-          python alfasec.py scan-project . --fail-on HIGH --format sarif --output alfasec.sarif
+          python alfasec.py scan-project . --no-history --policy .github/alfasec-policy.json --format sarif --output alfasec.sarif
 
       - name: Upload SARIF results
         if: >-

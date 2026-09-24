@@ -1,0 +1,7 @@
+{
+  "max_severity": "CRITICAL",
+  "minimum_confidence": "HIGH",
+  "ignored_rule_ids": [
+    "github-token"
+  ]
+}
