@@ -8,7 +8,8 @@ class CIWorkflowTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("pull_request:", workflow)
-        self.assertIn("--fail-on HIGH", workflow)
+        self.assertIn("--policy .github/alfasec-policy.json", workflow)
+        self.assertIn("--no-history", workflow)
         self.assertIn("--format sarif", workflow)
         self.assertIn("upload-sarif@v3", workflow)
         self.assertIn("github.event.pull_request.head.repo.full_name == github.repository", workflow)
