@@ -51,13 +51,13 @@
 
     <section class="panel local-panel" data-local-panel>
       <div class="panel-heading"><div><span class="step">01</span><h2>Local project scan</h2><p>Scan an authorized folder with the full Python analysis engine.</p></div><span class="capability">Python service</span></div>
-      <div class="row"><label class="field"><span>Service token</span><input id="scanToken" type="password" autocomplete="off" placeholder="Paste local scan token"></label><label class="field wide"><span>Authorized project folder</span><input id="projectPath" placeholder="C:\Projects\your-app"></label><button id="startScan">Start scan</button></div>
+      <div class="row"><label class="field"><span>Local scan session token</span><input id="scanToken" type="password" autocomplete="off" placeholder="Paste the token shown by the local scan service"></label><label class="field wide"><span>Authorized project folder</span><input id="projectPath" placeholder="C:\Projects\your-app"></label><button id="startScan">Start scan</button></div>
       <div id="scanStatus" class="result" role="status">Enable local mode to start a project scan.</div><pre id="scanResult">Results will appear here after a scan.</pre>
     </section>
 
     <section class="panel local-panel" data-local-panel>
       <div class="panel-heading"><div><span class="step">02</span><h2>Local service checks</h2><p>Passive checks limited to authorized localhost targets.</p></div><span class="capability">Java agent</span></div>
-      <div class="row"><label class="field wide"><span>Agent session token</span><input id="token" type="password" autocomplete="off" placeholder="Paste local agent token"></label><button id="connect">Connect agent</button></div>
+      <div class="row"><label class="field wide"><span>Local agent session token</span><input id="token" type="password" autocomplete="off" placeholder="Paste the token shown by the local agent"></label><button id="connect">Connect agent</button></div>
       <div id="statusText" class="result" role="status">Enable local mode to connect.</div>
       <div class="check-grid">
         <article class="check-card"><h3>Port availability</h3><p>Check a bounded localhost range.</p><div class="row compact"><input id="portStart" type="number" value="1" min="1" max="65535" aria-label="Port range start"><input id="portEnd" type="number" value="256" min="1" max="65535" aria-label="Port range end"><button id="ports">Run</button></div><pre id="portResult">Not run.</pre></article>

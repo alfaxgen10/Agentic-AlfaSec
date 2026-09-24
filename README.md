@@ -39,7 +39,11 @@ repository.
 
 ## Local Python scan API
 
-The Java agent and Python project scanner are separate loopback services. Start
+The Java agent and Python project scanner are separate loopback services. Their
+session tokens are temporary local authentication credentials, not cloud API
+keys, provider keys, or billing credentials. They are generated at process
+startup, printed only in the local service console, and become invalid when
+that service stops. Start
 the Java checks with `agent\run-agent.bat` and the project API with
 `agent\run-scan-server.bat`. Each prints a different random session token;
 enter the Java token in **Connect agent** and the Python token in **Project
