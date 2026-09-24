@@ -1,11 +1,83 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agentic AlfaSec</title><link rel="stylesheet" href="styles.css"></head>
-<body><header><div class="logo">A</div><div><b>Agentic AlfaSec</b><small>LOCAL DEFENSIVE SECURITY AGENT</small></div><span id="agentStatus" class="status">Agent offline</span></header>
-<main><section class="hero"><p>AUTHORIZED LOCAL CHECKS</p><h1>See what is exposed before it becomes a problem.</h1><span>Connect this dashboard to your local AlfaSec agent. By default, checks are restricted to localhost.</span></section>
-<section class="panel"><h2>Connect agent</h2><label class="consent"><input id="localConsent" type="checkbox"> I confirm that I own or am authorized to assess the local project and localhost services.</label><div class="row"><input id="token" type="password" placeholder="Paste session token printed by the agent"><button id="connect">Connect</button></div><p class="muted">Start <code>agent\run-agent.bat</code>, then paste its one-session token here.</p><div id="statusText" class="result">Not connected.</div></section>
-<section class="panel"><h2>Project scan</h2><p class="muted">Runs the Python scanner against an authorized local project directory only. Start <code>agent\run-scan-server.bat</code> and use its token.</p><div class="row"><input id="scanToken" type="password" placeholder="Python scan API token"><input id="projectPath" placeholder="C:\path\to\authorized\project"><button id="startScan">Start scan</button></div><div id="scanStatus" class="result">No scan submitted.</div><pre id="scanResult">No result.</pre></section>
-<section class="panel"><h2>Projects and history</h2><p class="muted">Saved locally by the scan service (bounded history).</p><button id="refreshProjects">Refresh projects</button><div class="row"><input id="summaryProjectId" placeholder="Project ID"><button id="loadSummary">Load risk and governance</button></div><div class="row"><input id="workflowProjectId" placeholder="Project ID"><input id="workflowFingerprint" placeholder="Finding fingerprint"><select id="workflowState"><option>open</option><option>in-progress</option><option>accepted-risk</option><option>false-positive</option><option>resolved</option></select><input id="workflowOwner" placeholder="Owner"><input id="workflowDueDate" type="date" aria-label="Due date"><input id="workflowExpiresAt" type="date" aria-label="Accepted-risk expiration"><input id="workflowRationale" placeholder="Decision rationale"><button id="saveWorkflow">Save decision</button></div><div class="row"><input id="remediationProjectId" placeholder="Project ID"><input id="remediationPlanPath" placeholder="Plan path inside project (optional)"><button id="verifyRemediation">Verify remediation plan</button></div><pre id="projectResult">No projects loaded.</pre><pre id="summaryResult">No summary loaded.</pre><pre id="workflowResult">No workflow records loaded.</pre><pre id="remediationResult">No remediation verification loaded.</pre></section>
-<section class="grid"><article class="panel"><h2>Port check</h2><p class="muted">Authorized localhost TCP availability, maximum 256 ports.</p><div class="row"><input id="portStart" type="number" value="1" min="1" max="65535"><input id="portEnd" type="number" value="256" min="1" max="65535"><button id="ports">Scan</button></div><pre id="portResult">No result.</pre></article>
-<article class="panel"><h2>HTTP headers</h2><p class="muted">Passive checks for a local HTTP application.</p><div class="row"><input id="url" value="http://127.0.0.1:3000"><button id="headers">Check</button></div><pre id="headerResult">No result.</pre></article>
-<article class="panel"><h2>TLS inspection</h2><p class="muted">Inspect a local TLS listener without bypassing validation.</p><div class="row"><input id="tlsPort" type="number" value="443" min="1" max="65535"><button id="tls">Inspect</button></div><pre id="tlsResult">No result.</pre></article>
-<article class="panel"><h2>Local DNS</h2><p class="muted">Resolve localhost through the operating system resolver.</p><button id="dns">Resolve localhost</button><pre id="dnsResult">No result.</pre></article></section></main><script src="app.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Agentic AlfaSec privacy-first defensive security dashboard">
+  <title>Agentic AlfaSec | Defensive security</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Agentic AlfaSec home">
+      <span class="logo">A</span>
+      <span><strong>Agentic AlfaSec</strong><small>DEFENSIVE SECURITY PLATFORM</small></span>
+    </a>
+    <span id="agentStatus" class="status"><i></i> Local agent unavailable</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">PRIVACY-FIRST SECURITY WORKFLOW</div>
+      <h1>Find risk early.<br><em>Fix it with evidence.</em></h1>
+      <p>Analyze source code, dependencies, secrets, configurations, and authorized local services without sending your project to an AlfaSec cloud.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/alfaxgen10/Agentic-AlfaSec/actions" target="_blank" rel="noreferrer">View GitHub scans</a>
+        <a class="button secondary" href="#local">Use local analysis</a>
+      </div>
+    </section>
+
+    <section class="mode-grid" aria-label="Analysis modes">
+      <article class="mode-card active">
+        <span class="mode-icon">✓</span><div><h2>Repository mode</h2><p>GitHub Actions scans every push and pull request automatically.</p><span class="pill green">Active in GitHub</span></div>
+      </article>
+      <article class="mode-card">
+        <span class="mode-icon">⌂</span><div><h2>Local mode</h2><p>Optional local services add project-folder and localhost checks.</p><span class="pill blue">Optional</span></div>
+      </article>
+      <article class="mode-card">
+        <span class="mode-icon">◈</span><div><h2>Evidence workflow</h2><p>Track risk, ownership, remediation, and verification over time.</p><span class="pill purple">Built in</span></div>
+      </article>
+    </section>
+
+    <section id="local" class="section-heading">
+      <div><div class="eyebrow">OPTIONAL LOCAL CAPABILITIES</div><h2>Connect your local workspace</h2><p>These checks run on your computer only. Nothing starts automatically.</p></div>
+      <span id="localMode" class="mode-badge">Local mode is off</span>
+    </section>
+
+    <section class="panel consent-panel">
+      <label class="consent"><input id="localConsent" type="checkbox"> <span><strong>I own or am authorized to assess this project and its localhost services.</strong><small>Required before enabling local project, network, or filesystem checks.</small></span></label>
+      <div class="local-help"><span>Local services are optional and run only when you start them yourself.</span><a href="https://github.com/alfaxgen10/Agentic-AlfaSec#start-the-agent" target="_blank" rel="noreferrer">Read setup guide →</a></div>
+    </section>
+
+    <section class="panel local-panel" data-local-panel>
+      <div class="panel-heading"><div><span class="step">01</span><h2>Local project scan</h2><p>Scan an authorized folder with the full Python analysis engine.</p></div><span class="capability">Python service</span></div>
+      <div class="row"><label class="field"><span>Service token</span><input id="scanToken" type="password" autocomplete="off" placeholder="Paste local scan token"></label><label class="field wide"><span>Authorized project folder</span><input id="projectPath" placeholder="C:\Projects\your-app"></label><button id="startScan">Start scan</button></div>
+      <div id="scanStatus" class="result" role="status">Enable local mode to start a project scan.</div><pre id="scanResult">Results will appear here after a scan.</pre>
+    </section>
+
+    <section class="panel local-panel" data-local-panel>
+      <div class="panel-heading"><div><span class="step">02</span><h2>Local service checks</h2><p>Passive checks limited to authorized localhost targets.</p></div><span class="capability">Java agent</span></div>
+      <div class="row"><label class="field wide"><span>Agent session token</span><input id="token" type="password" autocomplete="off" placeholder="Paste local agent token"></label><button id="connect">Connect agent</button></div>
+      <div id="statusText" class="result" role="status">Enable local mode to connect.</div>
+      <div class="check-grid">
+        <article class="check-card"><h3>Port availability</h3><p>Check a bounded localhost range.</p><div class="row compact"><input id="portStart" type="number" value="1" min="1" max="65535" aria-label="Port range start"><input id="portEnd" type="number" value="256" min="1" max="65535" aria-label="Port range end"><button id="ports">Run</button></div><pre id="portResult">Not run.</pre></article>
+        <article class="check-card"><h3>HTTP headers</h3><p>Review passive security headers.</p><div class="row compact"><input id="url" value="http://127.0.0.1:3000" aria-label="Local HTTP URL"><button id="headers">Run</button></div><pre id="headerResult">Not run.</pre></article>
+        <article class="check-card"><h3>TLS inspection</h3><p>Inspect a local TLS listener.</p><div class="row compact"><input id="tlsPort" type="number" value="443" min="1" max="65535" aria-label="TLS port"><button id="tls">Run</button></div><pre id="tlsResult">Not run.</pre></article>
+        <article class="check-card"><h3>Local DNS</h3><p>Resolve localhost through the OS.</p><div class="row compact"><button id="dns">Resolve localhost</button></div><pre id="dnsResult">Not run.</pre></article>
+      </div>
+    </section>
+
+    <section class="section-heading"><div><div class="eyebrow">PROJECT GOVERNANCE</div><h2>History and remediation</h2><p>Available when the local scan service is connected.</p></div></section>
+    <section class="panel local-panel" data-local-panel>
+      <div class="row"><button id="refreshProjects">Refresh projects</button><label class="field wide"><span>Project ID</span><input id="summaryProjectId" placeholder="Project ID"></label><button id="loadSummary">Load summary</button></div>
+      <div class="row"><label class="field"><span>Finding fingerprint</span><input id="workflowFingerprint" placeholder="Fingerprint"></label><label class="field"><span>State</span><select id="workflowState"><option>open</option><option>in-progress</option><option>accepted-risk</option><option>false-positive</option><option>resolved</option></select></label><label class="field"><span>Owner</span><input id="workflowOwner" placeholder="Owner"></label><button id="saveWorkflow">Save decision</button></div>
+      <div class="row"><label class="field"><span>Project ID</span><input id="workflowProjectId" placeholder="Project ID"></label><label class="field wide"><span>Rationale</span><input id="workflowRationale" placeholder="Required for risk decisions"></label></div>
+      <div class="row"><label class="field"><span>Remediation project ID</span><input id="remediationProjectId" placeholder="Project ID"></label><label class="field wide"><span>Plan path (optional)</span><input id="remediationPlanPath" placeholder="Default: .alfasec\remediation.json"></label><button id="verifyRemediation">Verify plan</button></div>
+      <div class="output-grid"><pre id="projectResult">No projects loaded.</pre><pre id="summaryResult">No summary loaded.</pre><pre id="workflowResult">No workflow records loaded.</pre><pre id="remediationResult">No remediation verification loaded.</pre></div>
+    </section>
+
+    <footer><span>Agentic AlfaSec 1.0.0</span><span>Local-first · defensive-only · evidence-based</span><a href="https://github.com/alfaxgen10/Agentic-AlfaSec" target="_blank" rel="noreferrer">Open source on GitHub ↗</a></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
